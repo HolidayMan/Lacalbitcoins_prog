@@ -1,5 +1,5 @@
-from Tkinter import *
-from lbcapi import api
+from tkinter import *
+import api
 import constants
 
 accounts = []
@@ -8,17 +8,25 @@ with open('accounts.txt','r') as f:
 	for i in f.readlines():
 		a,b,c = i.split('|')
 		accounts.append(constants.Account(a,b,c))
-# gui 
+# gui
 
 root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
 root.geometry('1000x600')
 
+
+
 frame_top = Frame(root)
 frame_acc = Frame(root)
 frame_center = Frame(root)
 frame_bottom= Frame(root)
+
+scrollbar_2 = Scrollbar(frame_acc)
+select = Listbox(frame_acc, height=4, yscrollcommand=scrollbar_2.set)
+scrollbar_2.config(command=select.yview)
+for i in accounts:
+    select.insert(END, i.name)
 
 
 inf_lb = Label(frame_top, text='It\'s a localbitcoin program', bg='light green',font=15,width=100)
@@ -33,14 +41,19 @@ show_mess = Button(frame_center, text='Show Messages', width=17)
 reply_mess = Button(frame_center, text='Answer Messages', width=17)
 
 answer = Text(frame_bottom, height=15, width=98, font=15)
+answer.config(state=DISABLED)
 scrollbar = Scrollbar(frame_bottom)
 
 
 frame_top.pack(side=TOP)
 inf_lb.pack(side=TOP, anchor='center')
-add_account.pack(pady=100)
+add_account.pack(pady=50)
+frame_acc.pack()
+select.pack(side=LEFT)
+scrollbar_2.pack(side=RIGHT, fill=Y)
 frame_bottom.pack(side=BOTTOM, anchor='center', fill=X)
 frame_center.pack(side=BOTTOM, anchor='center', pady=10)
+
 
 
 answer.pack(side=LEFT)
@@ -92,6 +105,9 @@ def add_account_window(event):
 		if name.get() and pbkey.get() and sckey.get():	
 			with open('accounts.txt', 'a') as f:
 				f.write(name.get()+'|'+pbkey.get()+'|'+sckey.get()+'\n')
+			accounts.append(constants.Account(name.get(),pbkey.get(),sckey.get()))
+			global select
+			select.insert(END, name.get())
 			add_acc.destroy()
 
 	add.bind('<Button-1>', add_account_fun)

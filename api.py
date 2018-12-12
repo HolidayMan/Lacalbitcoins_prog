@@ -12,7 +12,7 @@ def oauth2(access_token, client_id, client_secret=None, refresh_token=None, expi
     return conn
 
 
-def hmac(hmac_key, hmac_secret, server='https://localbitcoins.com'):
+def hmac(hmac_key, hmac_secret, server='https://localbitcoins.net'):
     conn = Connection()
     conn._set_hmac(server, hmac_key, hmac_secret)
     return conn

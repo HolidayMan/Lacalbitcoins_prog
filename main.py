@@ -1,5 +1,5 @@
-from Tkinter import *
-from lbcapi import api
+from tkinter import *
+import api
 import constants
 
 accounts = []
@@ -13,7 +13,7 @@ with open('accounts.txt','r') as f:
 root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
-root.geometry('1000x600')
+root.geometry('900x600')
 
 frame_top = Frame(root)
 frame_acc = Frame(root)

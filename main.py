@@ -50,9 +50,9 @@ del_button = Button(frame_del, bg='red', text='Delete Account', height=1)
 
 add_account = Button(root, text='Add account', width=20, font=15, bg='light blue')
 get_balance = Button(frame_center, text='Balance', width=17)
-show_notif = Button(frame_center, text='Show Notifications', width=17)
-add_notif = Button(frame_center, text='Add Notifications', width=17)
-edit_notif = Button(frame_center, text='Edit Notifications', width=17)
+show_ad = Button(frame_center, text='Show Ads', width=17)
+add_ad = Button(frame_center, text='Add Ad', width=17)
+edit_ad = Button(frame_center, text='Edit Ad', width=17)
 show_mess = Button(frame_center, text='Show Messages', width=17)
 reply_mess = Button(frame_center, text='Answer Messages', width=17)
 
@@ -83,9 +83,9 @@ answer.config(yscrollcomman=scrollbar.set)
 
 
 get_balance.grid(row=0, column=0)
-show_notif.grid(row=0, column=1)
-add_notif.grid(row=0, column=2)
-edit_notif.grid(row=0, column=3)
+show_ad.grid(row=0, column=1)
+add_ad.grid(row=0, column=2)
+edit_ad.grid(row=0, column=3)
 show_mess.grid(row=0, column=4)
 reply_mess.grid(row=0, column=5)
 
@@ -109,10 +109,10 @@ def get_balance_fun(name, hmac_key, hmac_secret):
 		answer.config(state=DISABLED)
 	except KeyError:
 		answer.config(state=NORMAL)
-		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret are incorrect.\n-----------------------\n')
+		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret is incorrect.\n-----------------------\n')
 		answer.config(state=DISABLED)
 
-def show_notif_fun(event):
+def show_ad_fun(event):
 	name_of_acc = select.get(ACTIVE)
 	for i in accounts:
 		if name_of_acc == i.name:
@@ -130,7 +130,7 @@ def show_notif_fun(event):
 			ins.append(st)
 	except KeyError:
 		answer.config(state=NORMAL)
-		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret are incorrect.\n-----------------------\n')
+		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret is incorrect.\n-----------------------\n')
 		answer.config(state=DISABLED)
 		return 0
 	ins = ''.join(ins[::-1])
@@ -147,6 +147,16 @@ def del_acc(event):
 	with open('accounts.txt', 'w') as f:
 		for i in accounts:
 			f.write('{}|{}|{}\n'.format(i.name,i.hmac_key,i.hmac_secret))
+
+def add_ad_window(event):
+	add_ad = Toplevel(root)
+	add_ad.title('Adding account')
+	add_ad.resizable(width=False,height=False)
+
+def edit_ad_window(event):
+	edit_ad = Toplevel(root)
+	edit_ad.title('Adding account')
+	edit_ad.resizable(width=False,height=False)
 
 def add_account_window(event):
 	add_acc = Toplevel(root)
@@ -200,9 +210,36 @@ def add_account_window(event):
 	add.grid(row=3, columnspan=2, pady=10)
 
 
-
 add_account.bind('<Button-1>', add_account_window)
-get_balance.bind('<Button-1>', pre_balance)
-show_notif.bind('<Button-1>', show_notif_fun)
 del_button.bind('<Button-1>', del_acc)
+get_balance.bind('<Button-1>', pre_balance)
+show_ad.bind('<Button-1>', show_ad_fun)
+add_ad.bind('<Button-1>', add_ad_window)
+edit_ad.bind('<Button-1>', edit_ad_window)
 root.mainloop()
+
+# def show_notifications_fun(event):
+# 	name_of_acc = select.get(ACTIVE)
+# 	for i in accounts:
+# 		if name_of_acc == i.name:
+# 			key = i.hmac_key
+# 			key_secret = i.hmac_secret
+# 			break
+# 	conn = api.hmac(key, key_secret)
+# 	s = conn.call('GET', '/api/notifications/').json()
+# 	ins = []
+# 	try:
+# 		for i in s['data']:
+# 			st = ''
+# 			time = i['created_at'][:i['created_at'].index('T')] + ' at ' + i['created_at'][i['created_at'].index('T')+1:i['created_at'].index('+')]
+# 			st = '\"{}\"; recieved: {}; {}\n'.format(i['msg'], time, 'READ' if i['read'] else 'NOT READ')
+# 			ins.append(st)
+# 	except KeyError:
+# 		answer.config(state=NORMAL)
+# 		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret are incorrect.\n-----------------------\n')
+# 		answer.config(state=DISABLED)
+# 		return 0
+# 	ins = ''.join(ins[::-1])
+# 	answer.config(state=NORMAL)
+# 	answer.insert(END, 'Notifications at {}:\n{}-----------------------\n'.format(name_of_acc, ins))
+# 	answer.config(state=DISABLED)

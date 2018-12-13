@@ -7,13 +7,13 @@ accounts = []
 with open('accounts.txt','r') as f:
 	for i in f.readlines():
 		a,b,c = i.split('|')
-		accounts.append(constants.Account(a,b,c))
+		accounts.append(constants.Account(a,b,c.replace('\n', '')))
 # gui
 
 root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
-root.geometry('1000x600')
+root.geometry('900x600')
 
 
 
@@ -41,7 +41,7 @@ show_mess = Button(frame_center, text='Show Messages', width=17)
 reply_mess = Button(frame_center, text='Answer Messages', width=17)
 
 answer = Text(frame_bottom, height=15, width=98, font=15)
-answer.config(state=DISABLED)
+
 scrollbar = Scrollbar(frame_bottom)
 
 
@@ -73,15 +73,21 @@ reply_mess.grid(row=0, column=5)
 #end gui
 
 def pre_balance(event):
-	key = pbkey.get()
-	key_secret = sckey.get()
-	get_balance_fun(key, key_secret)
-	
-def get_balance_fun(hmac_key,hmac_secret):
-	from lbcapi import api
+	name_of_acc = select.get(ACTIVE)
+	for i in accounts:
+		if name_of_acc == i.name:
+			key = i.hmac_key
+			key_secret = i.hmac_secret
+			break
+	get_balance_fun(name_of_acc, key, key_secret)
+
+def get_balance_fun(name, hmac_key, hmac_secret):
 	conn = api.hmac(hmac_key, hmac_secret)
 	s = conn.call('GET', '/api/wallet/').json()
-	answer.insert(END,"Balance on {}: {}\n".format(name.get(), s['data']['total']['balance']))
+	try:
+		answer.insert(END,"Balance on {}: {}\n".format(name, s['data']['total']['balance']))
+	except KeyError:
+		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret are incorrect.\n')
 
 
 def add_account_window(event):
@@ -105,13 +111,12 @@ def add_account_window(event):
 		if name.get() and pbkey.get() and sckey.get():	
 			with open('accounts.txt', 'a') as f:
 				f.write(name.get()+'|'+pbkey.get()+'|'+sckey.get()+'\n')
-			accounts.append(constants.Account(name.get(),pbkey.get(),sckey.get()))
+			accounts.append(constants.Account(name.get(),pbkey.get(),sckey.get().replace('\n','')))
 			global select
 			select.insert(END, name.get())
 			add_acc.destroy()
 
 	add.bind('<Button-1>', add_account_fun)
-
 	frame_entry.pack(side=TOP, anchor='center', pady=50)
 	namelb.grid(row=0,column=0)
 	name.grid(row=0,column=1)

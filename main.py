@@ -14,7 +14,7 @@ root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
 root.geometry('900x600')
-
+root.iconbitmap('favicon.ico')
 
 
 frame_top = Frame(root)
@@ -41,6 +41,7 @@ show_mess = Button(frame_center, text='Show Messages', width=17)
 reply_mess = Button(frame_center, text='Answer Messages', width=17)
 
 answer = Text(frame_bottom, height=15, width=98, font=15)
+answer.config(state=DISABLED)
 
 scrollbar = Scrollbar(frame_bottom)
 
@@ -85,11 +86,39 @@ def get_balance_fun(name, hmac_key, hmac_secret):
 	conn = api.hmac(hmac_key, hmac_secret)
 	s = conn.call('GET', '/api/wallet/').json()
 	try:
+		answer.config(state=NORMAL)
 		answer.insert(END,"Balance on {}: {}\n".format(name, s['data']['total']['balance']))
+		answer.config(state=DISABLED)
 	except KeyError:
+		answer.config(state=NORMAL)
 		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret are incorrect.\n')
+		answer.config(state=DISABLED)
 
-
+def show_notif_fun(event):
+	name_of_acc = select.get(ACTIVE)
+	for i in accounts:
+		if name_of_acc == i.name:
+			key = i.hmac_key
+			key_secret = i.hmac_secret
+			break
+	conn = api.hmac(key, key_secret)
+	s = conn.call('GET', '/api/notifications/').json()
+	ins = []
+	try:
+		for i in s['data']:
+			st = ''
+			time = i['created_at'][:i['created_at'].index('T')] + ' at ' + i['created_at'][i['created_at'].index('T')+1:i['created_at'].index('+')]
+			st = '\"{}\"; recieved: {}; {}\n'.format(i['msg'], time, 'READ' if i['read'] else 'NOT READ')
+			ins.append(st)
+	except KeyError:
+		answer.config(state=NORMAL)
+		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret are incorrect.\n')
+		answer.config(state=DISABLED)
+		return 0
+	ins = ''.join(ins[::-1])
+	answer.config(state=NORMAL)
+	answer.insert(END, 'Notifications at {}:\n{}-----------------------\n'.format(name_of_acc, ins))
+	answer.config(state=DISABLED)
 def add_account_window(event):
 	add_acc = Toplevel(root)
 	add_acc.title('Adding account')
@@ -130,5 +159,5 @@ def add_account_window(event):
 
 add_account.bind('<Button-1>', add_account_window)
 get_balance.bind('<Button-1>', pre_balance)
-
+show_notif.bind('<Button-1>', show_notif_fun)
 root.mainloop()

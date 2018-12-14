@@ -1,6 +1,7 @@
 from tkinter import *
 import api
 import constants
+import threading
 
 accounts = []
 
@@ -27,8 +28,8 @@ with open('accounts.txt', 'w') as f:
 root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
-root.geometry('900x600')
-root.iconbitmap('favicon.ico')
+root.geometry('1000x600')
+# root.iconbitmap('favicon.ico')
 
 
 frame_top = Frame(root)
@@ -48,14 +49,15 @@ inf_lb = Label(frame_top, text='It\'s a localbitcoin program', bg='light green',
 
 del_button = Button(frame_del, bg='red', text='Delete Account', height=1)
 
+
 add_account = Button(root, text='Add account', width=20, font=15, bg='light blue')
-get_balance = Button(frame_center, text='Balance', width=15)
-show_ad = Button(frame_center, text='Show Ads', width=15)
-add_ad = Button(frame_center, text='Add Ad', width=15)
-edit_ad = Button(frame_center, text='Edit Ad', width=15)
-show_mess = Button(frame_center, text='Show Messages', width=15)
-reply_mess = Button(frame_center, text='Answer Messages', width=15)
-show_notif = Button(frame_center, text='Show notifications', width=15)
+get_balance = Button(frame_center, text='Balance', width=14)
+show_ad = Button(frame_center, text='Show Ads', width=14)
+add_ad = Button(frame_center, text='Add Ad', width=14)
+edit_ad = Button(frame_center, text='Edit Ad', width=14)
+show_mess = Button(frame_center, text='Show Messages', width=14)
+reply_mess = Button(frame_center, text='Answer Messages', width=14)
+show_notif = Button(frame_center, text='Show notifications', width=14)
 
 answer = Text(frame_bottom, height=14, width=98, font=15)
 answer.config(state=DISABLED)
@@ -93,26 +95,24 @@ show_notif.grid(row=0, column=6)
 
 #end gui
 
-def pre_balance(event):
+def get_balance_fun(event):
 	name_of_acc = select.get(ACTIVE)
 	for i in accounts:
 		if name_of_acc == i.name:
-			key = i.hmac_key
-			key_secret = i.hmac_secret
+			hmac_key = i.hmac_key
+			hmac_secret = i.hmac_secret
 			break
-	get_balance_fun(name_of_acc, key, key_secret)
-
-def get_balance_fun(name, hmac_key, hmac_secret):
 	conn = api.hmac(hmac_key, hmac_secret)
 	s = conn.call('GET', '/api/wallet/').json()
 	try:
 		answer.config(state=NORMAL)
-		answer.insert(END,"Balance on {}: {}\n".format(name, s['data']['total']['balance'])+'\n-----------------------\n')
+		answer.insert(END,"Balance on {}: {}\n".format(name_of_acc, s['data']['total']['balance'])+'\n-----------------------\n')
 		answer.config(state=DISABLED)
 	except KeyError:
 		answer.config(state=NORMAL)
 		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret is incorrect.\n-----------------------\n')
 		answer.config(state=DISABLED)
+
 
 def show_ad_fun(event):
 	name_of_acc = select.get(ACTIVE)
@@ -250,7 +250,7 @@ def add_account_window(event):
 
 add_account.bind('<Button-1>', add_account_window)
 del_button.bind('<Button-1>', del_acc)
-get_balance.bind('<Button-1>', pre_balance)
+get_balance.bind('<Button-1>', get_balance_fun)
 show_ad.bind('<Button-1>', show_ad_fun)
 add_ad.bind('<Button-1>', add_ad_window)
 edit_ad.bind('<Button-1>', edit_ad_window)

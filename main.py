@@ -95,7 +95,13 @@ show_notif.grid(row=0, column=6)
 
 #end gui
 
-def get_balance_fun(event):
+def pre_balance(event):
+	answer.config(state=NORMAL)
+	answer.insert(END,'Sending request to api...\n')
+	answer.config(state=DISABLED)
+	threading.Thread(target=get_balance_fun).start()
+
+def get_balance_fun():
 	name_of_acc = select.get(ACTIVE)
 	for i in accounts:
 		if name_of_acc == i.name:
@@ -113,8 +119,13 @@ def get_balance_fun(event):
 		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret is incorrect.\n-----------------------\n')
 		answer.config(state=DISABLED)
 
+def pre_show_ad(event):
+	answer.config(state=NORMAL)
+	answer.insert(END,'Sending request to api...\n')
+	answer.config(state=DISABLED)
+	threading.Thread(target=show_ad_fun).start()
 
-def show_ad_fun(event):
+def show_ad_fun():
 	name_of_acc = select.get(ACTIVE)
 	for i in accounts:
 		if name_of_acc == i.name:
@@ -123,8 +134,8 @@ def show_ad_fun(event):
 			break
 	conn = api.hmac(key, key_secret)
 	s = conn.call('GET', '/api/ads/').json()
-	s = s['data']['ad_list']
 	try:
+		s = s['data']['ad_list']
 		if s:
 			st=''
 			for ind, i in enumerate(s):
@@ -150,7 +161,13 @@ def show_ad_fun(event):
 		answer.config(state=DISABLED)
 		return 0
 
-def show_notif_fun(event):
+def pre_show_notif(event):
+	answer.config(state=NORMAL)
+	answer.insert(END,'Sending request to api...\n')
+	answer.config(state=DISABLED)
+	threading.Thread(target=show_notif_fun).start()
+
+def show_notif_fun():
 	name_of_acc = select.get(ACTIVE)
 	for i in accounts:
 		if name_of_acc == i.name:
@@ -250,9 +267,9 @@ def add_account_window(event):
 
 add_account.bind('<Button-1>', add_account_window)
 del_button.bind('<Button-1>', del_acc)
-get_balance.bind('<Button-1>', get_balance_fun)
-show_ad.bind('<Button-1>', show_ad_fun)
+get_balance.bind('<Button-1>', pre_balance)
+show_ad.bind('<Button-1>', pre_show_ad)
 add_ad.bind('<Button-1>', add_ad_window)
 edit_ad.bind('<Button-1>', edit_ad_window)
-show_notif.bind('<Button-1>', show_notif_fun)
+show_notif.bind('<Button-1>', pre_show_notif)
 root.mainloop()

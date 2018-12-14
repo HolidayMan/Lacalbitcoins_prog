@@ -137,15 +137,14 @@ def show_ad_fun():
 	try:
 		s = s['data']['ad_list']
 		if s:
+			print(s)
 			st=''
 			for ind, i in enumerate(s):
 				try:
 					acc_inf = i['data']['account_info']
 				except KeyError:
-					acc_inf = '(phone number: {}) '.format(i['data']['account_details']['phone_number'])
-				st += '{}) username: {}; feedback: {}; trades: {}; last online: {};\n\
-				trade type: {}; ad id: {}; bank name: {}; payment window minutes: {}; account info: {}; \
-				country: {}; currency: {}; created at: {}; max amount available: {}; message: {}; volume coeficient BTC: {}; view at: {}; edit: {}\n'.format(ind+1, i['data']['profile']['username'],
+					acc_inf = '(phone number: {})\n '.format(i['data']['account_details']['phone_number'])
+				st += '{}) username: {};\n feedback: {};\n trades: {};\n last online: {};\n trade type: {};\n ad id: {};\n bank name: {};\n payment window minutes: {};\n account info: {};\n country: {};\n currency: {};\n created at: {};\n max amount available: {};\n message: {};\n volume coeficient BTC: {};\n view at: {};\n edit: {}\n'.format(ind+1, i['data']['profile']['username'],
 					i['data']['profile']['feedback_score'], i['data']['profile']['trade_count'], i['data']['profile']['last_online'], i['data']['trade_type'], 
 					i['data']['ad_id'],'\"'+i['data']['bank_name']+'\"', i['data']['payment_window_minutes'],acc_inf,i['data']['location_string'],
 					i['data']['currency'], i['data']['created_at'], i['data']['max_amount_available'], '\"' + i['data']['msg'] + '\"', i['data']['volume_coefficient_btc'],
@@ -210,6 +209,43 @@ def add_ad_window(event):
 	add_ad = Toplevel(root)
 	add_ad.title('Adding account')
 	add_ad.resizable(width=False,height=False)
+	add_ad.geometry('300x450')
+	frame_entries = Frame(add_ad)
+	frame_bank = Frame(add_ad)
+	frame_conditions = Frame(add_ad)
+
+	name_lb = Label(frame_entries, text='name:', font=15)
+	name = Entry(frame_entries)
+
+	price_lb = Label(frame_entries, text='price:', font=15)
+	price = Entry(frame_entries)
+
+	bank_lb = Label(add_ad, text='bank:', font=17)
+	scroll_bank = Scrollbar(frame_bank)
+	bank = Listbox(frame_bank,height=5, yscrollcommand=scroll_bank.set)
+	scroll_bank.config(command=bank.yview)
+
+	conditions_lb = Label(add_ad, text='conditions:', font=17)
+	scroll_cond = Scrollbar(frame_conditions)
+	conditions = Text(frame_conditions,font=15, height=5, yscrollcommand=scroll_cond.set)
+	scroll_cond.config(command=conditions.yview)
+
+	add_butt = Button(add_ad, text='Add', font=15)
+
+	frame_entries.pack(pady=20)
+	name_lb.grid(row=0,column=0,sticky=E)
+	name.grid(row=0,column=1)
+	price_lb.grid(row=1,column=0,sticky=E)
+	price.grid(row=1,column=1)
+	bank_lb.pack()
+	frame_bank.pack()
+	scroll_bank.pack(side=RIGHT,fill=Y)
+	bank.pack(side=LEFT, fill=X)
+	conditions_lb.pack(pady=20)
+	frame_conditions.pack()
+	scroll_cond.pack(side=RIGHT, fill=Y)
+	conditions.pack(side=LEFT, fill=X)
+	add_butt.pack(pady=20)
 
 def edit_ad_window(event):
 	edit_ad = Toplevel(root)

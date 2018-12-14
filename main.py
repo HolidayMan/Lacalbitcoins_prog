@@ -27,8 +27,8 @@ with open('accounts.txt', 'w') as f:
 root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
-root.geometry('1000x600')
-# root.iconbitmap('favicon.ico')
+root.geometry('900x600')
+root.iconbitmap('favicon.ico')
 
 
 frame_top = Frame(root)
@@ -113,6 +113,42 @@ def get_balance_fun(name, hmac_key, hmac_secret):
 		answer.config(state=DISABLED)
 
 def show_ad_fun(event):
+	name_of_acc = select.get(ACTIVE)
+	for i in accounts:
+		if name_of_acc == i.name:
+			key = i.hmac_key
+			key_secret = i.hmac_secret
+			break
+	conn = api.hmac(key, key_secret)
+	s = conn.call('GET', '/api/ads/').json()
+	s = s['data']['ad_list']
+	try:
+		if s:
+			st=''
+			for ind, i in enumerate(s):
+				st+='{}) username: {}; feedback: {}; trades: {}; last online: {};\n\
+				trade type: {}; ad id: {}; bank name: {}; payment window minutes: {}; account info: {}; \
+				country: {}; currency: {}; created at: {}; max amount available: {}; message: {}; volume coeficient BTC: {}; view at: {}; edit: {}\n'.format(ind+1, i['data']['profile']['username'],
+					i['data']['profile']['feedback_score'], i['data']['profile']['trade_count'], i['data']['profile']['last_online'], i['data']['trade_type'], 
+					i['data']['ad_id'],'\"'+i['data']['bank_name']+'\"', i['data']['payment_window_minutes'],i['data']['account_info'],i['data']['location_string'],
+					i['data']['currency'], i['data']['created_at'], i['data']['max_amount_available'], '\"' + i['data']['msg'] + '\"', i['data']['volume_coefficient_btc'],
+					i['actions']['public_view'], i['actions']['html_form'])
+
+			answer.config(state=NORMAL)
+			answer.insert(END,'Ads for ' + name_of_acc + ' {\n' + st + '\n}\n-----------------------')
+			answer.config(state=DISABLED)
+		else:
+			answer.config(state=NORMAL)
+			answer.insert(END,'You have no ads.\n-----------------------\n')
+			answer.config(state=DISABLED)
+			return 0
+	except KeyError:
+		answer.config(state=NORMAL)
+		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret is incorrect.\n-----------------------\n')
+		answer.config(state=DISABLED)
+		return 0
+
+def show_notif_fun(event):
 	name_of_acc = select.get(ACTIVE)
 	for i in accounts:
 		if name_of_acc == i.name:

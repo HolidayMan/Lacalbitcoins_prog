@@ -49,12 +49,13 @@ inf_lb = Label(frame_top, text='It\'s a localbitcoin program', bg='light green',
 del_button = Button(frame_del, bg='red', text='Delete Account', height=1)
 
 add_account = Button(root, text='Add account', width=20, font=15, bg='light blue')
-get_balance = Button(frame_center, text='Balance', width=17)
-show_ad = Button(frame_center, text='Show Ads', width=17)
-add_ad = Button(frame_center, text='Add Ad', width=17)
-edit_ad = Button(frame_center, text='Edit Ad', width=17)
-show_mess = Button(frame_center, text='Show Messages', width=17)
-reply_mess = Button(frame_center, text='Answer Messages', width=17)
+get_balance = Button(frame_center, text='Balance', width=15)
+show_ad = Button(frame_center, text='Show Ads', width=15)
+add_ad = Button(frame_center, text='Add Ad', width=15)
+edit_ad = Button(frame_center, text='Edit Ad', width=15)
+show_mess = Button(frame_center, text='Show Messages', width=15)
+reply_mess = Button(frame_center, text='Answer Messages', width=15)
+show_notif = Button(frame_center, text='Show notifications', width=15)
 
 answer = Text(frame_bottom, height=14, width=98, font=15)
 answer.config(state=DISABLED)
@@ -88,6 +89,7 @@ add_ad.grid(row=0, column=2)
 edit_ad.grid(row=0, column=3)
 show_mess.grid(row=0, column=4)
 reply_mess.grid(row=0, column=5)
+show_notif.grid(row=0, column=6)
 
 #end gui
 
@@ -105,7 +107,7 @@ def get_balance_fun(name, hmac_key, hmac_secret):
 	s = conn.call('GET', '/api/wallet/').json()
 	try:
 		answer.config(state=NORMAL)
-		answer.insert(END,"Balance on {}: {}\n".format(name, s['data']['total']['balance']))
+		answer.insert(END,"Balance on {}: {}\n".format(name, s['data']['total']['balance'])+'\n-----------------------\n')
 		answer.config(state=DISABLED)
 	except KeyError:
 		answer.config(state=NORMAL)
@@ -135,7 +137,7 @@ def show_ad_fun(event):
 					i['actions']['public_view'], i['actions']['html_form'])
 
 			answer.config(state=NORMAL)
-			answer.insert(END,'Ads for ' + name_of_acc + ' {\n' + st + '\n}\n-----------------------')
+			answer.insert(END,'Ads for ' + name_of_acc + ' {\n' + st + '\n}\n-----------------------\n')
 			answer.config(state=DISABLED)
 		else:
 			answer.config(state=NORMAL)
@@ -252,30 +254,5 @@ get_balance.bind('<Button-1>', pre_balance)
 show_ad.bind('<Button-1>', show_ad_fun)
 add_ad.bind('<Button-1>', add_ad_window)
 edit_ad.bind('<Button-1>', edit_ad_window)
+show_notif.bind('<Button-1>', show_notif_fun)
 root.mainloop()
-
-# def show_notifications_fun(event):
-# 	name_of_acc = select.get(ACTIVE)
-# 	for i in accounts:
-# 		if name_of_acc == i.name:
-# 			key = i.hmac_key
-# 			key_secret = i.hmac_secret
-# 			break
-# 	conn = api.hmac(key, key_secret)
-# 	s = conn.call('GET', '/api/notifications/').json()
-# 	ins = []
-# 	try:
-# 		for i in s['data']:
-# 			st = ''
-# 			time = i['created_at'][:i['created_at'].index('T')] + ' at ' + i['created_at'][i['created_at'].index('T')+1:i['created_at'].index('+')]
-# 			st = '\"{}\"; recieved: {}; {}\n'.format(i['msg'], time, 'READ' if i['read'] else 'NOT READ')
-# 			ins.append(st)
-# 	except KeyError:
-# 		answer.config(state=NORMAL)
-# 		answer.insert(END,'Something went wrong. Maybe your hmac or hmack secret are incorrect.\n-----------------------\n')
-# 		answer.config(state=DISABLED)
-# 		return 0
-# 	ins = ''.join(ins[::-1])
-# 	answer.config(state=NORMAL)
-# 	answer.insert(END, 'Notifications at {}:\n{}-----------------------\n'.format(name_of_acc, ins))
-# 	answer.config(state=DISABLED)

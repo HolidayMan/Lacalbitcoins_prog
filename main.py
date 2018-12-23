@@ -59,9 +59,8 @@ show_mess = Button(frame_center, text='Show Messages', width=14)
 reply_mess = Button(frame_center, text='Answer Messages', width=14)
 show_notif = Button(frame_center, text='Show notifications', width=14)
 
-answer = Text(frame_bottom, height=14, width=98, font=16)
+answer = Text(frame_bottom, height=14, width=98, font=16, wrap=WORD)
 answer.config(state=DISABLED)
-
 scrollbar = Scrollbar(frame_bottom)
 
 
@@ -137,18 +136,13 @@ def show_ad_fun():
 	try:
 		s = s['data']['ad_list']
 		if s:
-			print(s)
 			st=''
 			for ind, i in enumerate(s):
 				try:
 					acc_inf = i['data']['account_info']
 				except KeyError:
 					acc_inf = '(phone number: {})\n '.format(i['data']['account_details']['phone_number'])
-				st += '{}) username: {};\n feedback: {};\n trades: {};\n last online: {};\n trade type: {};\n ad id: {};\n bank name: {};\n payment window minutes: {};\n account info: {};\n country: {};\n currency: {};\n created at: {};\n max amount available: {};\n message: {};\n volume coeficient BTC: {};\n view at: {};\n edit: {}\n'.format(ind+1, i['data']['profile']['username'],
-					i['data']['profile']['feedback_score'], i['data']['profile']['trade_count'], i['data']['profile']['last_online'], i['data']['trade_type'], 
-					i['data']['ad_id'],'\"'+i['data']['bank_name']+'\"', i['data']['payment_window_minutes'],acc_inf,i['data']['location_string'],
-					i['data']['currency'], i['data']['created_at'], i['data']['max_amount_available'], '\"' + i['data']['msg'] + '\"', i['data']['volume_coefficient_btc'],
-					i['actions']['public_view'], i['actions']['html_form'])
+				st += '{}) username: {};\n feedback: {};\n trades: {};\n last online: {};\n trade type: {};\n ad id: {};\n bank name: {};\n payment window minutes: {};\n account info: {};\n country: {};\n currency: {};\n created at: {};\n max amount available: {};\n message: {};\n volume coeficient BTC: {};\n view at: {};\n edit: {}\n\n\n\n'.format(ind+1, i['data']['profile']['username'], i['data']['profile']['feedback_score'], i['data']['profile']['trade_count'], i['data']['profile']['last_online'], i['data']['trade_type'],  i['data']['ad_id'],'\"'+i['data']['bank_name']+'\"', i['data']['payment_window_minutes'],acc_inf,i['data']['location_string'], i['data']['currency'], i['data']['created_at'], i['data']['max_amount_available'], '\"' + i['data']['msg'] + '\"', i['data']['volume_coefficient_btc'], i['actions']['public_view'], i['actions']['html_form'])
 			answer.config(state=NORMAL)
 			answer.insert(END,'Ads for ' + name_of_acc + ' {\n' + st + '\n}\n-----------------------\n')
 			answer.config(state=DISABLED)

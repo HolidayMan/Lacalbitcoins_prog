@@ -1,6 +1,6 @@
 from tkinter import *
 import api
-import constants
+import account_class
 import threading
 
 accounts = []
@@ -8,14 +8,14 @@ try:
 	with open('accounts.txt','r') as f:
 		for i in f.readlines():
 			a,b,c = i.split('|')
-			accounts.append(constants.Account(a,b,c.replace('\n', '')))
+			accounts.append(account_class.Account(a,b,c.replace('\n', '')))
 except FileNotFoundError:
 	with open('accounts.txt', 'w') as f:
 		f.write('Test|test|test')
 	with open('accounts.txt', 'r') as f:
 		for i in f.readlines():
 			a,b,c = i.split('|')
-			accounts.append(constants.Account(a,b,c.replace('\n', '')))
+			accounts.append(account_class.Account(a,b,c.replace('\n', '')))
 names = [i.name for i in accounts]
 names.sort()
 pre_acc = []
@@ -274,7 +274,7 @@ def add_account_window(event):
 		if name.get() and pbkey.get() and sckey.get():	
 			with open('accounts.txt', 'a') as f:
 				f.write(name.get()+'|'+pbkey.get()+'|'+sckey.get()+'\n')
-			accounts.append(constants.Account(name.get(),pbkey.get(),sckey.get().replace('\n','')))
+			accounts.append(account_class.Account(name.get(),pbkey.get(),sckey.get().replace('\n','')))
 			global select
 			names = [i.name for i in accounts]
 			names.sort()

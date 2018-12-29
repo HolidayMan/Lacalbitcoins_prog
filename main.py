@@ -34,7 +34,7 @@ with open('accounts.txt', 'w') as f:
 root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
-root.geometry('900x600')
+root.geometry('1000x600')
 # root.iconbitmap('favicon.ico')
 
 
@@ -139,6 +139,7 @@ def show_ad_fun():
 			break
 	conn = api.hmac(key, key_secret)
 	s = conn.call('GET', '/api/ads/').json()
+	print(s)
 	try:
 		s = s['data']['ad_list']
 		if s:
@@ -148,7 +149,7 @@ def show_ad_fun():
 					acc_inf = i['data']['account_info']
 				except KeyError:
 					acc_inf = '(phone number: {})\n '.format(i['data']['account_details']['phone_number'])
-				st += '{}) username: {};\n feedback: {};\n trades: {};\n last online: {};\n trade type: {};\n ad id: {};\n bank name: {};\n payment window minutes: {};\n account info: {};\n country: {};\n currency: {};\n created at: {};\n max amount available: {};\n message: {};\n volume coeficient BTC: {};\n view at: {};\n edit: {}\n\n\n\n'.format(ind+1, i['data']['profile']['username'], i['data']['profile']['feedback_score'], i['data']['profile']['trade_count'], i['data']['profile']['last_online'], i['data']['trade_type'],  i['data']['ad_id'],'\"'+i['data']['bank_name']+'\"', i['data']['payment_window_minutes'],acc_inf,i['data']['location_string'], i['data']['currency'], i['data']['created_at'], i['data']['max_amount_available'], '\"' + i['data']['msg'] + '\"', i['data']['volume_coefficient_btc'], i['actions']['public_view'], i['actions']['html_form'])
+				st += '{}) username: {};\n feedback: {};\n trades: {};\n last online: {};\n price_equation: {};\n trade type: {};\n ad id: {};\n bank name: {};\n payment window minutes: {};\n account info: {};\n country: {};\n currency: {};\n created at: {};\n max amount available: {};\n message: {};\n volume coeficient BTC: {};\n view at: {};\n edit: {}\n\n\n\n'.format(ind+1, i['data']['profile']['username'], i['data']['profile']['feedback_score'], i['data']['profile']['trade_count'], i['data']['profile']['last_online'], i['data']['price_equation'], i['data']['trade_type'] ,i['data']['ad_id'],'\"'+i['data']['bank_name']+'\"', i['data']['payment_window_minutes'],acc_inf,i['data']['location_string'], i['data']['currency'], i['data']['created_at'], i['data']['max_amount_available'], '\"' + i['data']['msg'] + '\"', i['data']['volume_coefficient_btc'], i['actions']['public_view'], i['actions']['html_form'])
 			answer.config(state=NORMAL)
 			answer.insert(END,'Ads for ' + name_of_acc + ' {\n' + st + '\n}\n-----------------------\n')
 			answer.config(state=DISABLED)
@@ -276,12 +277,12 @@ def add_account_window(event):
 				f.write(name.get()+'|'+pbkey.get()+'|'+sckey.get()+'\n')
 			accounts.append(account_class.Account(name.get(),pbkey.get(),sckey.get().replace('\n','')))
 			global select
-			names = [i.name for i in accounts]
+			names = [i.name.lower() for i in accounts]
 			names.sort()
 			pre_acc = []
 			for i in names:
 				for j in accounts:
-					if j.name == i:
+					if j.name.lower() == i:
 						pre_acc.append(j)
 						break
 			accounts = pre_acc

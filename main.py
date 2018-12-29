@@ -4,12 +4,18 @@ import constants
 import threading
 
 accounts = []
-
-with open('accounts.txt','r') as f:
-	for i in f.readlines():
-		a,b,c = i.split('|')
-		accounts.append(constants.Account(a,b,c.replace('\n', '')))
-
+try:
+	with open('accounts.txt','r') as f:
+		for i in f.readlines():
+			a,b,c = i.split('|')
+			accounts.append(constants.Account(a,b,c.replace('\n', '')))
+except FileNotFoundError:
+	with open('accounts.txt', 'w') as f:
+		f.write('Test|test|test')
+	with open('accounts.txt', 'r') as f:
+		for i in f.readlines():
+			a,b,c = i.split('|')
+			accounts.append(constants.Account(a,b,c.replace('\n', '')))
 names = [i.name for i in accounts]
 names.sort()
 pre_acc = []
@@ -28,7 +34,7 @@ with open('accounts.txt', 'w') as f:
 root = Tk()
 root.title('Localbitcoin')
 root.resizable(width=False, height=False)
-root.geometry('1000x600')
+root.geometry('900x600')
 # root.iconbitmap('favicon.ico')
 
 
